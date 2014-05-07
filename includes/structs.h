@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 20:04:31 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/06 20:06:35 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/07 21:34:38 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,17 @@ typedef struct		s_keys
 	char			down;
 }					t_keys;
 
+typedef struct		s_player
+{
+	int				x;
+	int				y;
+	int				z;
+	int				fov;
+	int				vangle;
+	int				height;
+	int				speed;
+}					t_player;
+
 typedef struct		s_mdata
 {
 	void			*mptr;
@@ -32,7 +43,27 @@ typedef struct		s_mdata
 	int				endian;
 	int				w;
 	int				h;
+	t_player		*p;
 	int				**map;
+	t_keys			*keys;
+	int				block_size;
 }					t_mdata;
+
+typedef struct		s_vertex
+{
+	float			x;
+	float			y;
+	float			z;
+	float			w;
+	unsigned int	color;
+}					t_vertex;
+
+typedef struct		s_delta
+{
+	float			x1;
+	float			x2;
+	float			y1;
+	float			y2;
+}					t_delta;
 
 #endif

@@ -6,7 +6,7 @@
 #    By: sconso <sconso@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/12 18:13:08 by sconso            #+#    #+#              #
-#    Updated: 2014/05/06 20:01:32 by sconso           ###   ########.fr        #
+#    Updated: 2014/05/07 21:06:27 by sconso           ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,7 +18,7 @@ DFLAGS = -pedantic -g -ggdb
 INC = -I includes/ -I libft/includes/
 LFLAGS = -L libft/ -lft -L/usr/lib -lmlx -L/usr/X11/lib -lXext -lX11
 
-FILES = ft_errors.c ft_file.c ft_wolf.c
+FILES = ft_errors.c ft_file.c ft_wolf.c ft_matrix.c
 
 SRCDIR = src
 OBJDIR = obj
