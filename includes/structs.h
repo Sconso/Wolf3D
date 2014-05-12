@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 20:04:31 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/07 21:34:38 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/12 22:22:12 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,6 +45,8 @@ typedef struct		s_mdata
 	int				h;
 	t_player		*p;
 	int				**map;
+	int				mapw;
+	int				maph;
 	t_keys			*keys;
 	int				block_size;
 }					t_mdata;

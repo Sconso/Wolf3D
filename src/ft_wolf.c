@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 19:57:30 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/07 22:07:34 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/12 23:19:34 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,77 @@
 #include <fcntl.h>
 #include <stdlib.h>
 #include <ft_fc_conversion.h>
+#include <maths.h>
 
-void			find_walls(t_mdata *mdata)
+void			get_map_size(t_mdata *mdata)
 {
-	(void)mdata;
+	int			x;
+	int			y;
+	int			**map;
+
+	map = mdata->map;
+	x = -1;
+	while (map[++x])
+	{
+		y = -1;
+		while (map[x][++y] != -999)
+			;
+	}
+	mdata->mapw = y - 1;
+	mdata->maph = x - 1;
+}
+
+void			find_walls(t_mdata *mdata, double start)
+{
+	t_delta		delta;
+	int			xgrid;
+	int			ygrid;
+
+	delta.x1 = 0;
+	delta.x2 = 0;
+	delta.y1 = 0;
+	delta.y2 = 0;
+	if (mdata->p->vangle > 0 && mdata->p->vangle < 180)
+	{
+		delta.y1 = floor(mdata->p->y / 64) * 64 + 64;
+		delta.x1 = mdata->p->x + (mdata->p->y - delta.y1) / tan(start);
+		delta.y2 = 64;
+	}
+	else
+	{
+		delta.y1 = floor(mdata->p->y / 64) * 64;
+		delta.x1 = mdata->p->x + (mdata->p->y - delta.y1) / tan(start);
+		delta.y1--;
+		delta.y2 = -64;
+	}
+	if (start != 0 && start != 180)
+	{
+		while (1)
+		{
+			xgrid = (int)(delta.x1 / mdata->block_size);
+			ygrid = (int)(delta.y1 / mdata->block_size);
+			if (xgrid > mdata->mapw || ygrid > mdata->maph || xgrid < 0 || ygrid < 0)
+		}
+	}
+}
+
+void			raycast(t_mdata *mdata)
+{
+	int			distance;
+	double		sub;
+	double		start;
+	int			i;
+
+	distance = (mdata->w / 2) / (tan((double)mdata->p->fov / 2));
+	sub = (double)mdata->p->fov / (double)mdata->w;
+	start = mdata->p->vangle - (mdata->p->fov / 2);
+	if (start < 0)
+		start += 360;
+	i = -1;
+	while (++i <= mdata->w)
+	{
+		find_walls(mdata);
+	}
 }
 
 void			reset_values(t_mdata *mdata)
@@ -91,6 +158,7 @@ t_mdata			*init_mlx(int **map, int userwidth, int userheight)
 	mdata->iptr = NULL;
 	mdata->keys = init_keys();
 	reset_values(mdata);
+	get_map_size(mdata);
 	mdata->p = init_player(mdata);
 	mlx_do_key_autorepeatoff(mdata->mptr);
 	mlx_expose_hook(mdata->wptr, expose, mdata);
