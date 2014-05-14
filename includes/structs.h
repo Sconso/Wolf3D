@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 20:04:31 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/07 21:34:38 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/14 22:09:08 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,6 +19,10 @@ typedef struct		s_keys
 	char			left;
 	char			up;
 	char			down;
+	char			w;
+	char			a;
+	char			s;
+	char			d;
 }					t_keys;
 
 typedef struct		s_player
@@ -45,6 +49,8 @@ typedef struct		s_mdata
 	int				h;
 	t_player		*p;
 	int				**map;
+	int				mapw;
+	int				maph;
 	t_keys			*keys;
 	int				block_size;
 }					t_mdata;
