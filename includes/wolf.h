@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 19:59:07 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/14 22:07:33 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/15 19:47:34 by Myrkskog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,10 +26,20 @@
 # define A (97)
 # define S (115)
 # define D (100)
+# define O (111)
+# define P (112)
+# define MINUS (45)
+# define PLUS (61)
+# define OPEN_BRACKET (91)
+# define CLOSE_BRACKET (93)
+# define ZERO (48)
+# define OPTION (65406)
+# define DELETE (65288)
 
 /*
 ** draw.c
 */
+void		fill_image(t_mdata *mdata, float x, float y, unsigned int color);
 void		draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata);
 
 /*

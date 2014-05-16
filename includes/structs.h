@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 20:04:31 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/15 00:10:29 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/15 19:46:30 by Myrkskog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,17 +23,25 @@ typedef struct		s_keys
 	char			a;
 	char			s;
 	char			d;
+	char			o;
+	char			p;
+	char			plus;
+	char			minus;
+	char			open_b;
+	char			close_b;
+	char			option;
+	char			delete;
 }					t_keys;
 
 typedef struct		s_player
 {
-	int				x;
-	int				y;
+	float			x;
+	float			y;
 	int				z;
 	int				fov;
 	int				vangle;
 	int				height;
-	int				speed;
+	float			speed;
 }					t_player;
 
 typedef struct		s_mdata
@@ -53,6 +61,8 @@ typedef struct		s_mdata
 	int				maph;
 	t_keys			*keys;
 	int				block_size;
+	char			grid;
+	char			rotate;
 }					t_mdata;
 
 typedef struct		s_vertex

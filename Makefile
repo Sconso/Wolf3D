@@ -6,7 +6,7 @@
 #    By: sconso <sconso@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/12 18:13:08 by sconso            #+#    #+#              #
-#    Updated: 2014/05/14 20:04:44 by sconso           ###   ########.fr        #
+#    Updated: 2014/05/15 14:02:17 by Myrkskog         ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -15,7 +15,7 @@ NAME = wolf3d
 CC = cc
 CFLAGS = -Wall -Werror -Wextra
 DFLAGS = -pedantic -g -ggdb
-INC = -I includes/ -I libft/includes/
+INC = -I includes/ -I libft/includes/ -I /usr/X11/include
 LFLAGS = -L libft/ -lft -L/usr/lib -lmlx -L/usr/X11/lib -lXext -lX11
 
 FILES = draw.c draw_utilities.c ft_errors.c ft_file.c ft_wolf.c ft_matrix.c
