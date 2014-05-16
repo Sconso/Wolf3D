@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 19:57:30 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/15 20:57:04 by Myrkskog         ###   ########.fr       */
+/*   Updated: 2014/05/16 19:18:00 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -380,7 +380,7 @@ int			key_release(int keycode, t_mdata *mdata)
 int			loop(t_mdata *mdata)
 {
 	float	speed;
-	int		tmp;
+	float	tmp;
 	int		x;
 	int		y;
 
@@ -403,7 +403,7 @@ int			loop(t_mdata *mdata)
 		tmp = (y - speed > 0 ? y - speed : 1);
 		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->mapw)
 			return (1);
-		if (mdata->map[tmp / mdata->block_size][x / mdata->block_size] == 0)
+		if (mdata->map[(int)tmp / mdata->block_size][x / mdata->block_size] == 0)
 			mdata->p->y = tmp;
 	}
 	if (mdata->keys->down)
@@ -411,7 +411,7 @@ int			loop(t_mdata *mdata)
 		tmp = (y + speed < mdata->h ? y + speed : mdata->h - 1);
 		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->mapw)
 			return (1);
-		if (mdata->map[tmp / mdata->block_size][x / mdata->block_size] == 0)
+		if (mdata->map[(int)tmp / mdata->block_size][x / mdata->block_size] == 0)
 			mdata->p->y = tmp;
 	}
 	if (mdata->keys->a)
@@ -419,7 +419,7 @@ int			loop(t_mdata *mdata)
 		tmp = (x - speed > 0 ? x - speed : 1);
 		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->maph)
 			return (1);
-		if (mdata->map[y / mdata->block_size][tmp / mdata->block_size] == 0)
+		if (mdata->map[y / mdata->block_size][(int)tmp / mdata->block_size] == 0)
 			mdata->p->x = tmp;
 	}
 	if (mdata->keys->d)
@@ -427,7 +427,7 @@ int			loop(t_mdata *mdata)
 		tmp = (x + speed < mdata->w ? x + speed : mdata->w - 1);
 		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->maph)
 			return (1);
-		if (mdata->map[y / mdata->block_size][tmp / mdata->block_size] == 0)
+		if (mdata->map[y / mdata->block_size][(int)tmp / mdata->block_size] == 0)
 			mdata->p->x = tmp;
 	}
 	if (mdata->keys->o)
