@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 19:57:30 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/16 19:18:00 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/17 22:00:22 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,6 +17,8 @@
 #include <ft_fc_conversion.h>
 #include <math.h>
 #include "/usr/X11/include/X11/X.h"
+
+#include <stdio.h>
 
 float				gsin(float deg)
 {
@@ -43,21 +45,32 @@ void			find_free_spot(t_mdata *mdata)
 {
 	int			i;
 	int			j;
+	int			bs;
 
-	i = -1;
-	while (mdata->map[++i])
+	i = mdata->p->y;
+	j = mdata->p->x;
+	bs = mdata->block_size;
+	while (mdata->map[++i / bs] && mdata->map[i / bs][++j / bs] != -999)
 	{
-		j = -1;
-		while (mdata->map[i][++j] != -999)
+		if (mdata->map[i / bs][j / bs] == 0)
 		{
-			if (mdata->map[i][j] == 0)
-			{
-				mdata->p->x = j * mdata->block_size;
-				mdata->p->y = i * mdata->block_size;
-				return ;
-			}
+			mdata->p->x = j;
+			mdata->p->y = i;
+			return ;
 		}
 	}
+	i = mdata->p->y;
+	j = mdata->p->x;
+	while (--i / bs >= 0 && --j / bs >= 0)
+	{
+		if (mdata->map[i / bs][j / bs] == 0)
+		{
+			mdata->p->x = j;
+			mdata->p->y = i;
+			return ;
+		}
+	}
+
 	exit(0);
 }
 
@@ -70,7 +83,7 @@ void			draw_grid(t_mdata *mdata, int side)
 	{
 		draw_line(to_vertex(i, 0, 0, 0x444444),
 				  to_vertex(i, mdata->h, 0, 0x444444),
-				  mdata);
+				  mdata, mdata->ifov);
 		i += side;
 	}
 	i = 0;
@@ -78,7 +91,7 @@ void			draw_grid(t_mdata *mdata, int side)
 	{
 		draw_line(to_vertex(0, i, 0, 0x444444),
 				  to_vertex(mdata->w, i, 0, 0x444444),
-				  mdata);
+				  mdata, mdata->ifov);
 		i += side;
 	}
 }
@@ -134,7 +147,7 @@ void			find_x(t_mdata *mdata, double start, int bs)
 	delta.y2 = (delta.y1 < mdata->p->y ? delta.y1 - bs : delta.y1 + bs);
 	draw_line(to_vertex(delta.x1, delta.y1, 0, 0x00FF00),
 			  to_vertex(delta.x1, delta.y2, 0, 0x00FF00),
-			  mdata);
+			  mdata, mdata->imap);
 
 }
 
@@ -171,7 +184,7 @@ void			find_y(t_mdata *mdata, double start, int bs)
 	delta.x2 = (delta.x1 < mdata->p->x ? delta.x1 - bs : delta.x1 + bs);
 	draw_line(to_vertex(delta.x1, delta.y1, 0, 0x00FF00),
 			  to_vertex(delta.x2, delta.y1, 0, 0x00FF00),
-			  mdata);
+			  mdata, mdata->imap);
 }
 
 void			find_walls(t_mdata *mdata, double start)
@@ -184,7 +197,7 @@ void			find_walls(t_mdata *mdata, double start)
 
 #include <stdio.h>
 
-void			draw_vector(t_mdata *mdata, float angle, int color)
+void			draw_vector(t_mdata *mdata, t_img *img, float angle, int color)
 {
 	float		x;
 	float		y;
@@ -205,7 +218,7 @@ void			draw_vector(t_mdata *mdata, float angle, int color)
 /* 	printf("x = %f, y = %f\n nx = %f, ny = %f\n", mdata->p->x, mdata->p->y, x, y); */
 	draw_line(to_vertex(mdata->p->x, mdata->p->y, 0, color),
 			  to_vertex(x, y, 0, color),
-			  mdata);
+			  mdata, img);
 }
 
 void			raycast(t_mdata *mdata)
@@ -220,8 +233,8 @@ void			raycast(t_mdata *mdata)
 	start = (mdata->p->vangle - (mdata->p->fov / 2));
 /*	while ((start += 1) < mdata->p->vangle + (mdata->p->fov / 2))
 	draw_vector(mdata, start, 0xFFFF00);*/
-	draw_vector(mdata, mdata->p->vangle - mdata->p->fov / 2, 0xFF0000);
-	draw_vector(mdata, mdata->p->vangle + mdata->p->fov / 2, 0xFF0000);
+	draw_vector(mdata, mdata->ifov, mdata->p->vangle - mdata->p->fov / 2, 0xFF0000);
+	draw_vector(mdata, mdata->ifov, mdata->p->vangle + mdata->p->fov / 2, 0xFF0000);
 /*	draw_vector(mdata, mdata->p->vangle, 0xFF0000);*/
 	distance = (mdata->w / 2) / (tan((double)mdata->p->fov / 2));
 	sub = (double)mdata->p->fov / (double)mdata->w;
@@ -238,7 +251,7 @@ void			raycast(t_mdata *mdata)
 		start += sub;
 		distance++;
 	}
-	draw_vector(mdata, mdata->p->vangle, 0xFF0000);
+	draw_vector(mdata, mdata->ifov, mdata->p->vangle, 0xFF0000);
 }
 
 void			reset_values(t_mdata *mdata)
@@ -247,6 +260,28 @@ void			reset_values(t_mdata *mdata)
 	mdata->grid = 0;
 	mdata->rotate = 0;
 	return ;
+}
+
+t_img			*init_img(t_mdata *mdata, int width, int height)
+{
+	t_img		*img;
+
+	img = (t_img *)malloc(sizeof(*img));
+	ft_assert(img != NULL, "Can't malloc the img... Exiting...\n");
+	img->ptr = mlx_new_image(mdata->mptr, width, height);
+	img->data = mlx_get_data_addr(img->ptr, &img->bpp,
+								   &img->sizeline, &img->endian);
+	return (img);
+}
+
+t_img			*reinit_img(t_mdata *mdata, t_img *img, int width, int height)
+{
+	if (img->ptr)
+		mlx_destroy_image(mdata->mptr, img->ptr);
+	img->ptr = mlx_new_image(mdata->mptr, width, height);
+	img->data = mlx_get_data_addr(img->ptr, &img->bpp,
+								   &img->sizeline, &img->endian);
+	return (img);
 }
 
 t_player		*init_player(t_mdata *mdata)
@@ -301,135 +336,120 @@ int			**ft_init(char *map)
 	return (matrix);
 }
 
-int			key_press(int keycode, t_mdata *mdata)
+#include <stdio.h>
+
+t_img		*mlx_merge_img(t_img *img1, t_img *img2, t_vertex infos, t_mdata *mdata)
 {
-	printf("Code = %d\n", keycode);
-	if (keycode == ESC)
-		exit(0);
-	if (keycode == ZERO)
+	t_img	*img;
+	int		i;
+	int		j;
+	int		r;
+
+	img = init_img(mdata, infos.x, infos.y);
+	i = -1;
+	while (++i < infos.y)
 	{
-		mdata->grid = (mdata->grid ? 0 : 1);
-		return (1);
+		j = -1;
+		while (++j < infos.x)
+		{
+			r = (j * 4) + (i * img1->sizeline);
+			img->data[r] = img1->data[r] + img2->data[r];
+			img->data[r + 1] = img1->data[r + 1] + img2->data[r + 1];
+			img->data[r + 2] = img1->data[r + 2] + img2->data[r + 2];
+		}
 	}
-	if (keycode == OPTION)
-	{
-		mdata->rotate = (mdata->rotate ? 0 : 1);
-		return (1);
-	}
-	if (keycode == DELETE)
-	{
-		find_free_spot(mdata);
-		return (1);
-	}
-	if (keycode == RIGHT)
-		mdata->keys->right = 1;
-	if (keycode == LEFT)
-		mdata->keys->left = 1;
-	if (keycode == UP || keycode == W)
-		mdata->keys->up = 1;
-	if (keycode == DOWN || keycode == S)
-		mdata->keys->down = 1;
-	if (keycode == A)
-		mdata->keys->a = 1;
-	if (keycode == D)
-		mdata->keys->d = 1;
-	if (keycode == O)
-		mdata->keys->o = 1;
-	if (keycode == P)
-		mdata->keys->p = 1;
-	if (keycode == PLUS)
-		mdata->keys->plus = 1;
-	if (keycode == MINUS)
-		mdata->keys->minus = 1;
-	if (keycode == OPEN_BRACKET)
-		mdata->keys->open_b = 1;
-	if (keycode == CLOSE_BRACKET)
-		mdata->keys->close_b = 1;
-	return (0);
+	return (img);
 }
 
-int			key_release(int keycode, t_mdata *mdata)
+void			move_loop(t_mdata *mdata, int x, int y)
 {
-	if (keycode == RIGHT)
-		mdata->keys->right = 0;
-	if (keycode == LEFT)
-		mdata->keys->left = 0;
-	if (keycode == UP || keycode == W)
-		mdata->keys->up = 0;
-	if (keycode == DOWN || keycode == S)
-		mdata->keys->down = 0;
-	if (keycode == A)
-		mdata->keys->a = 0;
-	if (keycode == D)
-		mdata->keys->d = 0;
-	if (keycode == O)
-		mdata->keys->o = 0;
-	if (keycode == P)
-		mdata->keys->p = 0;
-	if (keycode == PLUS)
-		mdata->keys->plus = 0;
-	if (keycode == MINUS)
-		mdata->keys->minus = 0;
-	if (keycode == OPEN_BRACKET)
-		mdata->keys->open_b = 0;
-	if (keycode == CLOSE_BRACKET)
-		mdata->keys->close_b = 0;
-	return (0);
+	float		tmp;
+	float		speed;
+	float		tmpspeed;
+
+	speed = mdata->p->speed;
+	if (mdata->keys->up)
+	{
+		tmpspeed = speed;
+		tmp = (y - tmpspeed) / mdata->block_size;
+		while (tmp >= 0 && tmp <= mdata->mapw)
+		{
+			if (mdata->map[(int)tmp][x / mdata->block_size])
+				tmp = (y - --tmpspeed) / mdata->block_size;
+			else
+			{
+				mdata->p->y = tmp * mdata->block_size;
+				break ;
+			}
+		}
+	}
+	if (mdata->keys->down)
+	{
+		tmpspeed = speed;
+		tmp = (y + tmpspeed) / mdata->block_size;
+		while (tmp >= 0 && tmp <= mdata->mapw)
+		{
+			if (mdata->map[(int)tmp][x / mdata->block_size])
+				tmp = (y + --tmpspeed) / mdata->block_size;
+			else
+			{
+				mdata->p->y = tmp * mdata->block_size;
+				break ;
+			}
+		}
+	}
+	if (mdata->keys->a)
+	{
+		tmpspeed = speed;
+		tmp = (x - tmpspeed) / mdata->block_size;
+		while (tmp >= 0 && tmp <= mdata->maph)
+		{
+			if (mdata->map[y / mdata->block_size][(int)tmp])
+				tmp = (x - --tmpspeed) / mdata->block_size;
+			else
+			{
+				mdata->p->x = tmp * mdata->block_size;
+				break ;
+			}
+		}
+	}
+	if (mdata->keys->d)
+	{
+		tmpspeed = speed;
+		tmp = (x + tmpspeed) / mdata->block_size;
+		while (tmp >= 0 && tmp <= mdata->maph)
+		{
+			if (mdata->map[y / mdata->block_size][(int)tmp])
+				tmp = (x + --tmpspeed) / mdata->block_size;
+			else
+			{
+				mdata->p->x = tmp * mdata->block_size;
+				break ;
+			}
+		}
+	}
 }
-#include <stdio.h>
+
 int			loop(t_mdata *mdata)
 {
 	float	speed;
-	float	tmp;
 	int		x;
 	int		y;
 
-	x = mdata->p->x / mdata->block_size;
-	y = mdata->p->y / mdata->block_size;
+	x = (int)mdata->p->x / mdata->block_size;
+	y = (int)mdata->p->y / mdata->block_size;
 	if (x > mdata->mapw || x < 0 || y > mdata->maph || y < 0)
 		find_free_spot(mdata);
 	else if (mdata->map[y][x] != 0)
 		find_free_spot(mdata);
 	x = mdata->p->x;
 	y = mdata->p->y;
-
 	speed = mdata->p->speed;
+	move_loop(mdata, x, y);
 	if (mdata->keys->right)
 		mdata->p->vangle = (mdata->p->vangle == 0 ? 359 : mdata->p->vangle - 1);
 	if (mdata->keys->left)
 		mdata->p->vangle = (mdata->p->vangle == 359 ? 0 : mdata->p->vangle + 1);
-	if (mdata->keys->up)
-	{
-		tmp = (y - speed > 0 ? y - speed : 1);
-		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->mapw)
-			return (1);
-		if (mdata->map[(int)tmp / mdata->block_size][x / mdata->block_size] == 0)
-			mdata->p->y = tmp;
-	}
-	if (mdata->keys->down)
-	{
-		tmp = (y + speed < mdata->h ? y + speed : mdata->h - 1);
-		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->mapw)
-			return (1);
-		if (mdata->map[(int)tmp / mdata->block_size][x / mdata->block_size] == 0)
-			mdata->p->y = tmp;
-	}
-	if (mdata->keys->a)
-	{
-		tmp = (x - speed > 0 ? x - speed : 1);
-		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->maph)
-			return (1);
-		if (mdata->map[y / mdata->block_size][(int)tmp / mdata->block_size] == 0)
-			mdata->p->x = tmp;
-	}
-	if (mdata->keys->d)
-	{
-		tmp = (x + speed < mdata->w ? x + speed : mdata->w - 1);
-		if (tmp / mdata->block_size < 0 || tmp / mdata->block_size > mdata->maph)
-			return (1);
-		if (mdata->map[y / mdata->block_size][(int)tmp / mdata->block_size] == 0)
-			mdata->p->x = tmp;
-	}
 	if (mdata->keys->o)
 		mdata->p->fov -= (mdata->p->fov == 0 ? 0 : 1);
 	if (mdata->keys->p)
@@ -439,32 +459,29 @@ int			loop(t_mdata *mdata)
 	if (mdata->keys->minus)
 		mdata->p->speed = (speed - .1 <= 0 ? 0 : speed - .1);
 	if (mdata->keys->open_b)
+	{
 		mdata->block_size -= (mdata->block_size == 2 ? 0 : 1);
+		mdata->imap = reinit_img(mdata, mdata->imap, mdata->w, mdata->h);
+	}
 	if (mdata->keys->close_b)
+	{
 		mdata->block_size += (mdata->block_size == 64 ? 0 : 1);
+		mdata->imap = reinit_img(mdata, mdata->imap, mdata->w, mdata->h);
+	}
 	if (mdata->rotate)
 		mdata->p->vangle += (mdata->p->vangle == 360 ? -360 : 1);
 
-	if (mdata->iptr)
-		mlx_destroy_image(mdata->mptr, mdata->iptr);
-	mdata->iptr = mlx_new_image(mdata->mptr, mdata->w, mdata->h);
-	mdata->idata = mlx_get_data_addr(mdata->iptr, &mdata->bpp,
-									 &mdata->sizeline, &mdata->endian);
+	mdata->ifov = reinit_img(mdata, mdata->ifov, mdata->w, mdata->h);
 	raycast(mdata);
-	mlx_put_image_to_window(mdata->mptr, mdata->wptr, mdata->iptr, 0, 0);
+	mdata->img = mlx_merge_img(mdata->imap, mdata->ifov, to_vertex(mdata->w, mdata->h, 0, 0), mdata);
+	mlx_put_image_to_window(mdata->mptr, mdata->wptr, mdata->img->ptr, 0, 0);
 	mlx_string_put(mdata->mptr, mdata->wptr, 0, 50, 0xFF0000, ft_itoa(mdata->p->vangle));
 	return (0);
 }
 
 int				expose(t_mdata *mdata)
 {
-	if (mdata->iptr)
-		mlx_destroy_image(mdata->mptr, mdata->iptr);
-	mdata->iptr = mlx_new_image(mdata->mptr, mdata->w, mdata->h);
-	mdata->idata = mlx_get_data_addr(mdata->iptr, &mdata->bpp,
-									 &mdata->sizeline, &mdata->endian);
-	raycast(mdata);
-	mlx_put_image_to_window(mdata->mptr, mdata->wptr, mdata->iptr, 0, 0);
+	(void)mdata;
 	return (0);
 }
 
@@ -479,7 +496,8 @@ t_mdata			*init_mlx(int **map, int userwidth, int userheight)
 	mdata->map = map;
 	mdata->mptr = mlx_init();
 	mdata->wptr = mlx_new_window(mdata->mptr, mdata->w, mdata->h, "Wolf 3D");
-	mdata->iptr = NULL;
+	mdata->imap = init_img(mdata, mdata->w, mdata->h);
+	mdata->ifov = init_img(mdata, mdata->w, mdata->h);
 	mdata->keys = init_keys();
 	reset_values(mdata);
 	get_map_size(mdata);

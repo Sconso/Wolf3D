@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/11 21:56:22 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/15 18:05:52 by Myrkskog         ###   ########.fr       */
+/*   Updated: 2014/05/17 20:18:19 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,53 +14,52 @@
 #include <mlx.h>
 #include <math.h>
 
-void		fill_image(t_mdata *mdata, float x, float y, unsigned int color)
+void		fill_image(t_img *img, float x, float y, unsigned int color)
 {
 	int			r;
 
-	if (x < 0 || y < 0 || x >= mdata->w || y >= mdata->h)
-		return ;
-	color = mlx_get_color_value(mdata->mptr, color);
-	r = ((int)x * 4) + ((int)y * mdata->sizeline);
-	mdata->idata[r] = (color & 0xFF);
-	mdata->idata[r + 1] = (color & 0xFF00) >> 8;
-	mdata->idata[r + 2] = (color & 0xFF0000) >> 16;
+	r = ((int)x * 4) + ((int)y * img->sizeline);
+	img->data[r] = (color & 0xFF);
+	img->data[r + 1] = (color & 0xFF00) >> 8;
+	img->data[r + 2] = (color & 0xFF0000) >> 16;
 }
 
-void			draw_line2(t_vertex v1, t_vertex v2, t_mdata *mdata)
+/* void			draw_line2(t_vertex v1, t_vertex v2, t_mdata *mdata) */
+/* { */
+/* 	t_delta		delta; */
+/* 	int			err; */
+/* 	int			e2; */
+
+/* 	delta.x1 = ft_abs(v2.x - v1.x); */
+/* 	delta.y1 = ft_abs(v2.y - v1.y); */
+/* 	delta.x2 = (v1.x < v2.x ? 1 : -1); */
+/* 	delta.y2 = (v1.y < v2.y ? 1 : -1); */
+/* 	err = (delta.x1 > delta.y1 ? delta.x1 : -delta.y1) / 2; */
+/* 	while (42) */
+/* 	{ */
+/* 		fill_image(mdata, v1.x, v1.y, v1.color); */
+/* 		if (v1.x == (int)v2.x || v1.y == (int)v2.y) */
+/* 			break ; */
+/* 		e2 = err; */
+/* 		if (e2 > -delta.x1) */
+/* 		{ */
+/* 			err -= delta.y1; */
+/* 			v1.x = v1.x + delta.x2; */
+/* 		} */
+/* 		if (e2 < delta.y1) */
+/* 		{ */
+/* 			err += delta.x1; */
+/* 			v1.y = v1.y + delta.y2; */
+/* 		} */
+/* 	} */
+/* } */
+
+void			draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata, t_img *img)
 {
 	t_delta		delta;
-	int			err;
-	int			e2;
+	int			color;
 
-	delta.x1 = ft_abs(v2.x - v1.x);
-	delta.y1 = ft_abs(v2.y - v1.y);
-	delta.x2 = (v1.x < v2.x ? 1 : -1);
-	delta.y2 = (v1.y < v2.y ? 1 : -1);
-	err = (delta.x1 > delta.y1 ? delta.x1 : -delta.y1) / 2;
-	while (42)
-	{
-		fill_image(mdata, v1.x, v1.y, v1.color);
-		if (v1.x == (int)v2.x || v1.y == (int)v2.y)
-			break ;
-		e2 = err;
-		if (e2 > -delta.x1)
-		{
-			err -= delta.y1;
-			v1.x = v1.x + delta.x2;
-		}
-		if (e2 < delta.y1)
-		{
-			err += delta.x1;
-			v1.y = v1.y + delta.y2;
-		}
-	}
-}
-
-void			draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata)
-{
-	t_delta		delta;
-
+	color = mlx_get_color_value(mdata->mptr, v1.color);
 	delta.x1 = 1;
 	delta.y1 = 1;
 	delta.x2 = fabs(v1.x - v2.x);
@@ -71,7 +70,8 @@ void			draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata)
 		delta.y1 = (delta.x2 ? delta.y2 / delta.x2 : 0);
 	while (fabs(v1.x - v2.x) >= 1 || fabs(v1.y - v2.y) >= 1)
 	{
-		fill_image(mdata, v1.x, v1.y, v1.color);
+		if (v1.x >= 0 && v1.y >= 0 && v1.x < mdata->w && v1.y < mdata->h)
+			fill_image(img, v1.x, v1.y, color);
 		if (v1.x < v2.x)
 			v1.x += delta.x1;
 		else if (v1.x > v2.x)
@@ -83,38 +83,38 @@ void			draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata)
 	}
 }
 
-void			draw_rect(t_mdata *mdata, t_vertex v1, t_vertex v2)
+void			draw_rect(t_mdata *mdata, t_img *img, t_vertex v1, t_vertex v2)
 {
 	while (v1.y <= v2.y)
 	{
-		draw_line(v1, to_vertex(v2.x, v1.y, 0, v2.color), mdata);
+		draw_line(v1, to_vertex(v2.x, v1.y, 0, v2.color), mdata, img);
 		v1.y++;
 	}
 }
 
-void			draw_circle(t_mdata *mdata, int ray, t_vertex center, int color)
+void			draw_circle(t_mdata *mdata, t_img *img, int ray, t_vertex center)
 {
 	int			x;
-	int			y;
 	int			m;
+	int			color;
 
+	color = mlx_get_color_value(mdata->mptr, center.color);
 	x = 0;
-	y = ray;
 	m = 5 - 4 * ray;
-	while (x <= y)
+	while (x <= ray)
 	{
-		fill_image(mdata, x + center.x, y + center.y, color);
-		fill_image(mdata, y + center.x, x + center.y, color);
-		fill_image(mdata, -x + center.x, y + center.y, color);
-		fill_image(mdata, -y + center.x, x + center.y, color);
-		fill_image(mdata, x + center.x, -y + center.y, color);
-		fill_image(mdata, y + center.x, -x + center.y, color);
-		fill_image(mdata, -x + center.x, -y + center.y, color);
-		fill_image(mdata, -y + center.x, -x + center.y, color);
+		fill_image(img, x + center.x, ray + center.y, color);
+		fill_image(img, ray + center.x, x + center.y, color);
+		fill_image(img, -x + center.x, ray + center.y, color);
+		fill_image(img, -ray + center.x, x + center.y, color);
+		fill_image(img, x + center.x, -ray + center.y, color);
+		fill_image(img, ray + center.x, -x + center.y, color);
+		fill_image(img, -x + center.x, -ray + center.y, color);
+		fill_image(img, -ray + center.x, -x + center.y, color);
 		if (m > 0)
 		{
-			y = y - 1;
-			m = m - 8 * y;
+			ray = ray - 1;
+			m = m - 8 * ray;
 		}
 		x++;
 		m = m + 8 * x + 4;

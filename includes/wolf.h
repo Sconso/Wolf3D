@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 19:59:07 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/15 19:47:34 by Myrkskog         ###   ########.fr       */
+/*   Updated: 2014/05/17 20:10:53 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,9 @@
 # include <structs.h>
 
 # define BLOCK_SIZE 64
+
+# define RELEASE (0)
+# define PRESS (1)
 
 # define ESC (65307)
 # define RIGHT (65363)
@@ -39,8 +42,8 @@
 /*
 ** draw.c
 */
-void		fill_image(t_mdata *mdata, float x, float y, unsigned int color);
-void		draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata);
+void		fill_image(t_img *img, float x, float y, unsigned int color);
+void		draw_line(t_vertex v1, t_vertex v2, t_mdata *mdata, t_img *img);
 
 /*
 ** draw_utilities.c
@@ -69,5 +72,16 @@ void		ft_ext(char *file, char *ext);
 int			**create_matrix(int fd);
 int			**fill_matrix(int fd, int **matrix);
 void		print_matrix(int **matrix);
+
+/*
+** ft_wolf.h
+*/
+void		find_free_spot(t_mdata *mdata);
+
+/*
+** keys.c
+*/
+int			key_press(int keycode, t_mdata *mdata);
+int			key_release(int keycode, t_mdata *mdata);
 
 #endif

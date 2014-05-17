@@ -6,7 +6,7 @@
 #    By: sconso <sconso@student.42.fr>              +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2014/01/12 18:13:08 by sconso            #+#    #+#              #
-#    Updated: 2014/05/15 14:02:17 by Myrkskog         ###   ########.fr        #
+#    Updated: 2014/05/17 18:27:41 by sconso           ###   ########.fr        #
 #                                                                              #
 #******************************************************************************#
 
@@ -18,7 +18,8 @@ DFLAGS = -pedantic -g -ggdb
 INC = -I includes/ -I libft/includes/ -I /usr/X11/include
 LFLAGS = -L libft/ -lft -L/usr/lib -lmlx -L/usr/X11/lib -lXext -lX11
 
-FILES = draw.c draw_utilities.c ft_errors.c ft_file.c ft_wolf.c ft_matrix.c
+FILES = draw.c draw_utilities.c ft_errors.c ft_file.c ft_wolf.c ft_matrix.c \
+		keys.c
 
 SRCDIR = src
 OBJDIR = obj

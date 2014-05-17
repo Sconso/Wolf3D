@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 20:04:31 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/15 19:46:30 by Myrkskog         ###   ########.fr       */
+/*   Updated: 2014/05/17 20:58:48 by sconso           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,15 +44,22 @@ typedef struct		s_player
 	float			speed;
 }					t_player;
 
+typedef struct		s_img
+{
+	void			*ptr;
+	char			*data;
+	int				bpp;
+	int				sizeline;
+	int				endian;
+}					t_img;
+
 typedef struct		s_mdata
 {
 	void			*mptr;
 	void			*wptr;
-	void			*iptr;
-	char			*idata;
-	int				bpp;
-	int				sizeline;
-	int				endian;
+	t_img			*img;
+	t_img			*imap;
+	t_img			*ifov;
 	int				w;
 	int				h;
 	t_player		*p;
