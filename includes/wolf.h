@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 19:59:07 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/17 20:10:53 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/18 20:47:31 by Myrkskog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,7 @@
 # define D (100)
 # define O (111)
 # define P (112)
+# define M (109)
 # define MINUS (45)
 # define PLUS (61)
 # define OPEN_BRACKET (91)

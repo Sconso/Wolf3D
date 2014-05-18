@@ -6,12 +6,11 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/17 18:26:58 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/17 18:39:47 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/18 22:46:17 by Myrkskog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include <wolf.h>
-#include <stdio.h>
 #include <stdlib.h>
 
 static int		one_shot(int keycode, t_mdata *mdata)
@@ -27,6 +26,8 @@ static int		one_shot(int keycode, t_mdata *mdata)
 		mdata->rotate = (mdata->rotate ? 0 : 1);
 	else if (keycode == DELETE && ++check)
 		find_free_spot(mdata);
+	else if (keycode == M && ++check)
+		mdata->active_map = (mdata->active_map ? 0 : 1);
 	return (check);
 }
 
@@ -50,7 +51,6 @@ int				key_press(int keycode, t_mdata *mdata)
 {
 	if (one_shot(keycode, mdata))
 		return (1);
-	printf("Code = %d\n", keycode);
 	move(keycode, mdata, PRESS);
 	if (keycode == O)
 		mdata->keys->o = 1;

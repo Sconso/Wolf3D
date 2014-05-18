@@ -6,7 +6,7 @@
 /*   By: sconso <sconso@student.42.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2014/05/06 20:04:31 by sconso            #+#    #+#             */
-/*   Updated: 2014/05/17 20:58:48 by sconso           ###   ########.fr       */
+/*   Updated: 2014/05/18 20:43:22 by Myrkskog         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ typedef struct		s_mdata
 	t_img			*img;
 	t_img			*imap;
 	t_img			*ifov;
+	t_img			*game;
 	int				w;
 	int				h;
 	t_player		*p;
@@ -70,6 +71,7 @@ typedef struct		s_mdata
 	int				block_size;
 	char			grid;
 	char			rotate;
+	char			active_map;
 }					t_mdata;
 
 typedef struct		s_vertex
